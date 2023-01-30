@@ -19,7 +19,8 @@
         <div class="row">
             <section class="vh-100">
                 <div class="container py-5 h-100 ">
-                    <div class="row d-flex justify-content-center align-items-center h-100">
+                    <div class="row d-flex justify-content-center align-items-center h-100" id="alert">
+
                         <div class="col">
                             <div class="card rounded border border-0" id="list1"
                                 style="border-radius: .75rem; background-color: #eff1f2;">
@@ -35,11 +36,11 @@
                                             <div class="card-body">
                                                 <div class="d-flex flex-row align-items-center">
                                                     <input type="text" class="form-control form-control-lg"
-                                                        id="exampleFormControlInput1"
+                                                        id="input-task"
                                                         placeholder="Ajouter une nouvelle tâche">
                                                     <div>
                                                         <button type="button"
-                                                            class="btn btn-primary mx-2">Ajouter</button>
+                                                            class="btn btn-primary mx-2" id="btn-task">Ajouter</button>
                                                     </div>
                                                 </div>
                                             </div>
@@ -203,6 +204,7 @@
             </section>
         </div>
     </div>
+    <script src="./src/js/main.js"></script>
 </body>
 
 </html>
