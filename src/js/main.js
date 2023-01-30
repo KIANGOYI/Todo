@@ -1,26 +1,44 @@
-const title = document.getElementById('');
+const alertElt = document.getElementById('alert');
 const btn = document.getElementById('btn-task');
-const form = document.getElementById('form')
+const title = document.getElementById('input-task')
 
 const urlHost = "http://localhost:3000/taches";
 let tache = {};
 
+//On crée une date
+let date1 = new Date();
+let dateLocale = date1.toLocaleString('fr-FR',{
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    second: 'numeric'});
+
 btn.addEventListener('click', ()=>{
     //const formData = new FormData(form);console.log(formData);
-    console.log(form.children[0].value);
+    //console.log(form.children[0].value);
     tache = {
-        title: form.children[0].value,
-        created_at: new Date(),
+        title: title.value,
+        created_at: dateLocale,
         update_at:'',
-        status: form.children[2].value,
+        status: "pending",
     }
+    console.log(tache);
     addTask(urlHost, tache).then((data) => {
         if(data){
             let div = document.createElement('div');
-            div.className = "alert";
+            div.className = "alert alert-success";
+            div.role ='alert';
             let p =document.createElement('p');
+            p.className="text-black fw-bold";
+            div.appendChild(p);
+            alertElt.appendChild(div);
         }
-    }).catch(err=>{});
+    }).catch(err=>{
+        console.log(err)
+    });
 })
 
 async function addTask(url = '', data = {}) {
