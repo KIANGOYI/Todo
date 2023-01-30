@@ -1,21 +1,27 @@
 {
-  "taches":[
-  ],
-  "posts": [
+  "taches": [
     {
-      "id": 1,
-      "title": "json-server",
-      "author": "typicode"
-    }
-  ],
-  "comments": [
+      "title": "Tesmozart",
+      "createdAT": "2023-10-10",
+      "updateAt": "2023-10-10",
+      "status": "false",
+      "deleteAt": "2023-10-10",
+      "id": 1
+    },
     {
-      "id": 1,
-      "body": "some comment",
-      "postId": 1
+      "title": "Tesmozart",
+      "createdAT": "2023-10-10",
+      "updateAt": "2023-10-10",
+      "status": "false",
+      "deleteAt": "2023-10-10",
+      "id": 2
+    },
+    {
+      "title": "foo",
+      "created_at": "2023-01-30T15:15:18.766Z",
+      "update_at": "",
+      "status": "baz",
+      "id": 3
     }
-  ],
-  "profile": {
-    "name": "typicode"
-  }
+  ]
 }
