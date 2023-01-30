@@ -1,6 +1,7 @@
 const alertElt = document.getElementById('alert');
 const btn = document.getElementById('btn-task');
-const title = document.getElementById('input-task')
+const title = document.getElementById('input-task');
+const getAllData = document.getElementById('getAllData');
 
 const urlHost = "http://localhost:3000/taches";
 let tache = {};
@@ -16,9 +17,10 @@ let dateLocale = date1.toLocaleString('fr-FR',{
     minute: 'numeric',
     second: 'numeric'});
 
-btn.addEventListener('click', ()=>{
+btn.addEventListener('click', (e)=>{
     //const formData = new FormData(form);console.log(formData);
     //console.log(form.children[0].value);
+    e.preventDefault();
     tache = {
         title: title.value,
         created_at: dateLocale,
@@ -33,6 +35,7 @@ btn.addEventListener('click', ()=>{
             div.role ='alert';
             let p =document.createElement('p');
             p.className="text-black fw-bold";
+            p.textContent = "Ajout de la tâche avec succès."
             div.appendChild(p);
             alertElt.appendChild(div);
         }
@@ -58,4 +61,30 @@ async function addTask(url = '', data = {}) {
     });
     return response.json(); // parses JSON response into native JavaScript objects
 }
-  
+
+async function getDataOfTask (){
+    var myHeaders = new Headers();
+
+    var myInit = { method: 'GET',
+                   headers: myHeaders,
+                   mode: 'cors',
+                   cache: 'default' };
+    
+    const response = await fetch(urlHost,myInit);
+    if(response.ok){
+        return response.json();
+    }
+}
+
+getDataOfTask().then((data)=>{
+    console.log(data);
+}).catch(err=>{
+    let div = document.createElement('div');
+    div.className = "alert alert-success";
+    div.role ='alert';
+    let p =document.createElement('p');
+    p.className="text-black fw-bold";
+    p.textContent = "Error lors de la récuperation des tâches."
+    div.appendChild(p);
+    alertElt.appendChild(div);
+})
