@@ -1,4 +1,5 @@
 const alertElt = document.getElementById("alert");
+let idElemetToUpdate = null;
 
 const btn = document.getElementById("btn-task");
 
@@ -19,8 +20,6 @@ const urlHost = "http://localhost:3000/taches";
 
 let tache = {};
 
-//On crée une date
-
 let date1 = new Date();
 
 let dateLocale = date1.toLocaleString("fr-FR", {
@@ -40,15 +39,12 @@ let dateLocale = date1.toLocaleString("fr-FR", {
 });
 
 const getTask = (element) => {
-  console.log(element);
-
   title.value = element.title;
+  idElemetToUpdate = element.id;
   btn.textContent = "Modifier";
-  btn.onclick = updateTask(element.id,title.value);
 };
 
-async function updateTask(id,title) {
- 
+async function updateTask(id, title) {
   const res = await fetch("http://localhost:3000/taches/" + id, {
     method: "PATCH",
 
@@ -75,10 +71,6 @@ const deleteTask = (taskId) => {
 };
 
 btn.addEventListener("click", () => {
-  //const formData = new FormData(form);console.log(formData);
-
-  //console.log(form.children[0].value);
-
   let date =
     new Date().getDay() +
     "/" +
@@ -97,29 +89,35 @@ btn.addEventListener("click", () => {
     status: "pending",
   };
 
+  if (btn.textContent === "Modifier" && idElemetToUpdate != null) {
+    updateTask(idElemetToUpdate, title.value);
+    idElemetToUpdate = null;
+    console.log("Updated task");
+  } else {
+    console.log("Created task");
+    addTask(urlHost, tache)
+      .then((data) => {
+        if (data) {
+          let div = document.createElement("div");
 
-  addTask(urlHost, tache)
-    .then((data) => {
-      if (data) {
-        let div = document.createElement("div");
+          div.className = "alert alert-success";
 
-        div.className = "alert alert-success";
+          div.role = "alert";
 
-        div.role = "alert";
+          let p = document.createElement("p");
 
-        let p = document.createElement("p");
+          p.className = "text-black fw-bold";
 
-        p.className = "text-black fw-bold";
+          div.appendChild(p);
 
-        div.appendChild(p);
+          alertElt.appendChild(div);
+        }
+      })
 
-        alertElt.appendChild(div);
-      }
-    })
-
-    .catch((err) => {
-      console.log(err);
-    });
+      .catch((err) => {
+        console.log(err);
+      });
+  }
 });
 
 async function addTask(url = "", data = {}) {
