@@ -1,20 +1,28 @@
+// let require = require("./test")
+
 const alertElt = document.getElementById("alert");
 let idElemetToUpdate = null;
 
 const btn = document.getElementById("btn-task");
 
+const btnTest = document.getElementById("btn-test");
+btnTest.addEventListener("click", () => testAdd());
+
+document
+  .getElementById("btn-test")
+  .addEventListener("click", () => testUpdate());
+
 const title = document.getElementById("input-task");
 
 const btnUpdate = document.querySelector(".btn-update");
+
+const message = document.querySelector("#message");
 
 const btnDelete = document.querySelector(".btn-delete");
 
 const input = document.getElementById("input");
 
 const getAllData = document.getElementById("getAllData");
-
-const form = document.querySelector("form");
-form.addEventListener("submit", (e) => deleteTask(e));
 
 const urlHost = "http://localhost:3000/taches";
 
@@ -70,6 +78,55 @@ const deleteTask = (taskId) => {
   );
 };
 
+// function testUpdate(data) {
+//   if (
+//     data.created_at != null ||
+//     data.updated_at != null ||
+//     data.id != null ||
+//     data.title != null ||
+//     data.status != null
+//   ) {
+//     return 0;
+//   } else {
+//     return 1;
+//   }
+// }
+
+// function testAdd() {
+//   tache = {
+//     title: "aube mbali",
+//     created_at: "01/03/2023",
+//     status: "pending",
+//   };
+
+//   let retour = addTask(urlHost, tache);
+//   retour.then((task) => {
+//     if (task.title == tache.title) {
+//       console.log(task);
+//       let tacheUpdate = {
+//         id: task.id,
+//         title: "Sah nerisse",
+//         created_at: "29/01/2023",
+//         update_at: "31/02/2023",
+//         status: "fait",
+//       };
+//       console.log(testUpdate(tacheUpdate));
+//       if (testUpdate(tacheUpdate) == 0) {
+//         console.log("ok");
+//         updateTask(tacheUpdate.id, tacheUpdate.title);
+//         //deleteTask(task.id);
+//       } else {
+//         let p = document.createElement("p");
+//         p.innerHTML = `<span class="text-white">Les champs sont obligatoires</span>`;
+//         p.className = "bg-danger text-center ";
+//         message.append(p);
+//       }
+//     } else {
+//       console.log(1);
+//     }
+//   });
+// }
+
 btn.addEventListener("click", () => {
   let date =
     new Date().getDay() +
@@ -90,9 +147,11 @@ btn.addEventListener("click", () => {
   };
 
   if (btn.textContent === "Modifier" && idElemetToUpdate != null) {
-    updateTask(idElemetToUpdate, title.value);
-    idElemetToUpdate = null;
-    console.log("Updated task");
+    if (testUpdate(tache) == 0) {
+      updateTask(idElemetToUpdate, title.value);
+      idElemetToUpdate = null;
+      console.log("Updated task");
+    }
   } else {
     console.log("Created task");
     addTask(urlHost, tache)
@@ -151,7 +210,7 @@ async function addTask(url = "", data = {}) {
 async function getDataOfTask() {
   var myHeaders = new Headers();
 
-  var myInit = {
+  var options = {
     method: "GET",
 
     headers: myHeaders,
@@ -161,7 +220,7 @@ async function getDataOfTask() {
     cache: "default",
   };
 
-  const response = await fetch(urlHost, myInit);
+  const response = await fetch(urlHost, options);
 
   if (response.ok) {
     return response.json();
