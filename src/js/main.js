@@ -13,6 +13,45 @@ const input = document.getElementById("input");
 
 const getAllData = document.getElementById("getAllData");
 
+//Test
+const btn_test = document.getElementById("btn-test");
+
+btn_test.addEventListener("click", async () => {
+  const task = {
+    title: "Tester Ajout Aubaaaaa",
+    created_at: "31/01/2023",
+    update_at: "",
+    status: "pending",
+  };
+
+  const maData = await addTask("http://localhost:3000/taches/", task);
+
+  const reponse = await getTaskById("http://localhost:3000/taches", maData.id);
+  const taskGet = await reponse.json();
+
+  console.log(verifyTask(task, taskGet));
+
+  if (verifyTask(task, taskGet)) {
+    deleteTask(maData.id);
+  }
+});
+
+function getTaskById(url, id) {
+  const task = fetch(`${url}/${id}`);
+
+  return task;
+}
+
+function verifyTask(objectAdd, objetGet) {
+  if (objectAdd.title == objetGet.title) {
+    return true;
+  }
+
+  return false;
+}
+
+// And test
+
 const form = document.querySelector("form");
 form.addEventListener("submit", (e) => deleteTask(e));
 
