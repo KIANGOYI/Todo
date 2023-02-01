@@ -24,6 +24,12 @@ const input = document.getElementById("input");
 
 const getAllData = document.getElementById("getAllData");
 
+//Test
+const btn_test = document.getElementById("btn-test");
+
+const form = document.querySelector("form");
+form.addEventListener("submit", (e) => deleteTask(e));
+
 const urlHost = "http://localhost:3000/taches";
 
 let tache = {};
@@ -78,106 +84,104 @@ const deleteTask = (taskId) => {
   );
 };
 
-// function testUpdate(data) {
-//   if (
-//     data.created_at != null ||
-//     data.updated_at != null ||
-//     data.id != null ||
-//     data.title != null ||
-//     data.status != null
-//   ) {
-//     return 0;
-//   } else {
-//     return 1;
-//   }
-// }
+function testUpdate(data) {
+  if (
+    data.created_at != null ||
+    data.updated_at != null ||
+    data.id != null ||
+    data.title != null ||
+    data.status != null
+  ) {
+    return 0;
+  } else {
+    return 1;
+  }
+}
 
-// function testAdd() {
-//   tache = {
-//     title: "aube mbali",
-//     created_at: "01/03/2023",
-//     status: "pending",
-//   };
-
-//   let retour = addTask(urlHost, tache);
-//   retour.then((task) => {
-//     if (task.title == tache.title) {
-//       console.log(task);
-//       let tacheUpdate = {
-//         id: task.id,
-//         title: "Sah nerisse",
-//         created_at: "29/01/2023",
-//         update_at: "31/02/2023",
-//         status: "fait",
-//       };
-//       console.log(testUpdate(tacheUpdate));
-//       if (testUpdate(tacheUpdate) == 0) {
-//         console.log("ok");
-//         updateTask(tacheUpdate.id, tacheUpdate.title);
-//         //deleteTask(task.id);
-//       } else {
-//         let p = document.createElement("p");
-//         p.innerHTML = `<span class="text-white">Les champs sont obligatoires</span>`;
-//         p.className = "bg-danger text-center ";
-//         message.append(p);
-//       }
-//     } else {
-//       console.log(1);
-//     }
-//   });
-// }
-
-btn.addEventListener("click", () => {
-  let date =
-    new Date().getDay() +
-    "/" +
-    new Date().getMonth() +
-    1 +
-    "/" +
-    new Date().getFullYear();
-
+function testAdd() {
   tache = {
-    title: title.value,
-
-    created_at: date,
-
-    update_at: "",
-
+    title: "aube mbali",
+    created_at: "01/03/2023",
     status: "pending",
   };
 
-  if (btn.textContent === "Modifier" && idElemetToUpdate != null) {
-    if (testUpdate(tache) == 0) {
-      updateTask(idElemetToUpdate, title.value);
-      idElemetToUpdate = null;
-      console.log("Updated task");
+  let retour = addTask(urlHost, tache);
+  retour.then((task) => {
+    if (task.title == tache.title) {
+      let tacheUpdate = {
+        id: task.id,
+        title: "Sah nerisse",
+        created_at: "29/01/2023",
+        update_at: "31/02/2023",
+        status: "fait",
+      };
+
+      if (testUpdate(tacheUpdate) == 0) {
+        updateTask(tacheUpdate.id, tacheUpdate.title);
+        deleteTask(task.id);
+      } else {
+        let p = document.createElement("p");
+        p.innerHTML = `<span class="text-white">Les champs sont obligatoires</span>`;
+        p.className = "bg-danger text-center ";
+        message.append(p);
+      }
+    } else {
+      console.log(1);
     }
-  } else {
-    console.log("Created task");
-    addTask(urlHost, tache)
-      .then((data) => {
-        if (data) {
-          let div = document.createElement("div");
+  });
+}
 
-          div.className = "alert alert-success";
+// btn.addEventListener("click", () => {
+//   let date =
+//     new Date().getDay() +
+//     "/" +
+//     new Date().getMonth() +
+//     1 +
+//     "/" +
+//     new Date().getFullYear();
 
-          div.role = "alert";
+//   tache = {
+//     title: title.value,
 
-          let p = document.createElement("p");
+//     created_at: date,
 
-          p.className = "text-black fw-bold";
+//     update_at: "",
 
-          div.appendChild(p);
+//     status: "pending",
+//   };
 
-          alertElt.appendChild(div);
-        }
-      })
+//   if (btn.textContent === "Modifier" && idElemetToUpdate != null) {
+//     if (testUpdate(tache) == 0) {
+//       updateTask(idElemetToUpdate, title.value);
+//       idElemetToUpdate = null;
+//       console.log("Updated task");
+//     }
+//   } else {
+//     console.log("Created task");
+//     addTask(urlHost, tache)
+//       .then((data) => {
+//         if (data) {
+//           let div = document.createElement("div");
 
-      .catch((err) => {
-        console.log(err);
-      });
-  }
-});
+//           div.className = "alert alert-success";
+
+//           div.role = "alert";
+
+//           let p = document.createElement("p");
+
+//           p.className = "text-black fw-bold";
+
+//           div.appendChild(p);
+
+//           alertElt.appendChild(div);
+//         }
+//       })
+
+//       .catch((err) => {
+//         console.log(err);
+//       });
+//   }
+// });
 
 async function addTask(url = "", data = {}) {
   // Default options are marked with *
