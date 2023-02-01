@@ -1,56 +1,94 @@
+import * as require from "./test.js";
+import * as crud from "./crud.js";
 const alertElt = document.getElementById("alert");
 let idElemetToUpdate = null;
 
 const btn = document.getElementById("btn-task");
 
-const title = document.getElementById("input-task");
+//Test d'ajout
+const btn_add = document.getElementById("btn-add");
+btn_add.addEventListener("click", testAdd);
+// And test
+async function testAdd(){
+  const task = {
+    title: "Tester Ajout Aubaa",
+    created_at: "31/01/2023",
+    update_at: "",
+    status: "pending",
+  };
+  const maData = await crud.addTask("http://localhost:3000/taches/", task);
+  const reponse = await require.getTaskById("http://localhost:3000/taches", maData.id);
+  const taskGet = await reponse.json();
+  //console.log(modData);
+  console.log(require.verifyTaskAdd(task, taskGet));
+  if (require.verifyTaskAdd(task, taskGet)) {
+    //require.verifyTaskAdd(task, taskGet)
+    crud.deleteTask(maData.id);
+  }
+}
+//Test de modification
+ const btn_mod = document.getElementById("btn-mod");
+  btn_mod.addEventListener("click", testMod);
 
-const btnUpdate = document.querySelector(".btn-update");
+  async function testMod(){
+    const task = {
+      title: "Tester Ajout Aubaaaaa",
+      created_at: "31/01/2023",
+      update_at: "",
+      status: "pending",
+    };
 
-const btnDelete = document.querySelector(".btn-delete");
+    const taskMod = {
+      title: "Test Aubaaaaa",
+      created_at: "30/01/2022",
+      update_at: "22/01/2023",
+      status: "Done",
+    };
+    const maData = await crud.addTask("http://localhost:3000/taches/", task);
+    const modData = await crud.updateTask(maData.id, taskMod);
+    const reponse = await require.getTaskById("http://localhost:3000/taches", modData.id);
+    const taskGet = await reponse.json();
+    //console.log(modData);
+    console.log(require.verifyTask(taskMod, taskGet));
+    if(require.verifyTask(taskMod, taskGet)) {
+      crud.deleteTask(maData.id);
+    }
+  }
 
-const input = document.getElementById("input");
+//Test de suppression
+const btn_del = document.getElementById("btn-del");
+btn_del.addEventListener("click", testDel);
 
-const getAllData = document.getElementById("getAllData");
-
-//Test
-const btn_test = document.getElementById("btn-test");
-
-btn_test.addEventListener("click", async () => {
+async function testDel(){
   const task = {
     title: "Tester Ajout Aubaaaaa",
     created_at: "31/01/2023",
     update_at: "",
     status: "pending",
   };
-
-  const maData = await addTask("http://localhost:3000/taches/", task);
-
-  const reponse = await getTaskById("http://localhost:3000/taches", maData.id);
-  const taskGet = await reponse.json();
-
-  console.log(verifyTask(task, taskGet));
-
-  if (verifyTask(task, taskGet)) {
-    deleteTask(maData.id);
+  const maData = await crud.addTask("http://localhost:3000/taches/", task);
+  const delData = await crud.deleteTask(maData.id);
+  const reponse = await require.getTaskById("http://localhost:3000/taches", maData.id);
+  if(reponse.ok){
+    console.log(false);
+    //return false;
+  }else{
+   console.log(true);
+   //return true;
   }
-});
-
-function getTaskById(url, id) {
-  const task = fetch(`${url}/${id}`);
-
-  return task;
 }
 
-function verifyTask(objectAdd, objetGet) {
-  if (objectAdd.title == objetGet.title) {
-    return true;
-  }
+const btn_all = document.getElementById("btn-all");
+btn_all.addEventListener('click', ()=>{
+  testAdd();
+  // testMod();
+})
 
-  return false;
-}
+const title = document.getElementById("input-task");
+const getAllData = document.getElementById("getAllData");
 
-// And test
+//Test
+// const btn_test = document.getElementById("btn-test");
 
 const form = document.querySelector("form");
 form.addEventListener("submit", (e) => deleteTask(e));
@@ -77,36 +115,17 @@ let dateLocale = date1.toLocaleString("fr-FR", {
   second: "numeric",
 });
 
+// testAdd();
+// console.log("test globale");
+// testMod();
+// console.log("test globale");
+// testDel();
+// console.log("test globale");
+
 const getTask = (element) => {
   title.value = element.title;
   idElemetToUpdate = element.id;
   btn.textContent = "Modifier";
-};
-
-async function updateTask(id, title) {
-  const res = await fetch("http://localhost:3000/taches/" + id, {
-    method: "PATCH",
-
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify({ title }),
-  });
-}
-
-const deleteTask = (taskId) => {
-  if (!taskId) return;
-
-  const options = {
-    method: "DELETE",
-
-    headers: new Headers(),
-  };
-
-  fetch(`http://localhost:3000/taches/${taskId}`, options).catch((err) =>
-    console.error(err)
-  );
 };
 
 btn.addEventListener("click", () => {
@@ -129,12 +148,14 @@ btn.addEventListener("click", () => {
   };
 
   if (btn.textContent === "Modifier" && idElemetToUpdate != null) {
-    updateTask(idElemetToUpdate, title.value);
-    idElemetToUpdate = null;
-    console.log("Updated task");
+    if (testUpdate(tache) == 0) {
+      updateTask(idElemetToUpdate, title.value);
+      idElemetToUpdate = null;
+      console.log("Updated task");
+    }
   } else {
     console.log("Created task");
-    addTask(urlHost, tache)
+    crud.addTask(urlHost, tache)
       .then((data) => {
         if (data) {
           let div = document.createElement("div");
@@ -159,38 +180,10 @@ btn.addEventListener("click", () => {
   }
 });
 
-async function addTask(url = "", data = {}) {
-  // Default options are marked with *
-
-  const response = await fetch(url, {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-
-    mode: "cors", // no-cors, *cors, same-origin
-
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-
-    credentials: "same-origin", // include, *same-origin, omit
-
-    headers: {
-      "Content-Type": "application/json",
-
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-
-    redirect: "follow", // manual, *follow, error
-
-    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-
-    body: JSON.stringify(data), // body data type must match "Content-Type" header
-  });
-
-  return response.json(); // parses JSON response into native JavaScript objects
-}
-
 async function getDataOfTask() {
   var myHeaders = new Headers();
 
-  var myInit = {
+  var options = {
     method: "GET",
 
     headers: myHeaders,
@@ -200,7 +193,7 @@ async function getDataOfTask() {
     cache: "default",
   };
 
-  const response = await fetch(urlHost, myInit);
+  const response = await fetch(urlHost, options);
 
   if (response.ok) {
     return response.json();
@@ -260,7 +253,7 @@ getDataOfTask()
       a5.innerHTML = `<i class="fas  fa-trash me-2 text-danger"></i>`;
       a5.setAttribute("href", "#");
       a5.setAttribute("id", element.id);
-      a5.addEventListener("click", (e) => deleteTask(e.target.id));
+      a5.addEventListener("click", (e) => crud.deleteTask(element.id));
 
       div3.appendChild(p3);
       li3.appendChild(div3);
@@ -275,20 +268,9 @@ getDataOfTask()
       ul.append(li);
       ul.append(li2);
       ul.append(li3);
-      console.log(ul);
+      //console.log(ul);
       getAllData.append(ul);
     });
-
-    //Obtenir la clé et la valeur avec la fonction entries
-    // for (const [key, value] of Object.entries(attributes)) {
-    //   if (value !== null) {
-    //     element.setAttribute(key, value);
-    //   }
-    // }
-
-    // data.forEach((element) => {
-    //   titleTask.innerHTML;
-    // });
   })
   .catch((err) => {
     let div = document.createElement("div");
