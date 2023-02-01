@@ -1,31 +1,94 @@
-// let require = require("./test")
-
+import * as require from "./test.js";
+import * as crud from "./crud.js";
 const alertElt = document.getElementById("alert");
 let idElemetToUpdate = null;
 
 const btn = document.getElementById("btn-task");
 
-const btnTest = document.getElementById("btn-test");
-btnTest.addEventListener("click", () => testAdd());
+//Test d'ajout
+const btn_add = document.getElementById("btn-add");
+btn_add.addEventListener("click", testAdd);
+// And test
+async function testAdd(){
+  const task = {
+    title: "Tester Ajout Aubaa",
+    created_at: "31/01/2023",
+    update_at: "",
+    status: "pending",
+  };
+  const maData = await crud.addTask("http://localhost:3000/taches/", task);
+  const reponse = await require.getTaskById("http://localhost:3000/taches", maData.id);
+  const taskGet = await reponse.json();
+  //console.log(modData);
+  console.log(require.verifyTaskAdd(task, taskGet));
+  if (require.verifyTaskAdd(task, taskGet)) {
+    //require.verifyTaskAdd(task, taskGet)
+    crud.deleteTask(maData.id);
+  }
+}
+//Test de modification
+ const btn_mod = document.getElementById("btn-mod");
+  btn_mod.addEventListener("click", testMod);
 
-document
-  .getElementById("btn-test")
-  .addEventListener("click", () => testUpdate());
+  async function testMod(){
+    const task = {
+      title: "Tester Ajout Aubaaaaa",
+      created_at: "31/01/2023",
+      update_at: "",
+      status: "pending",
+    };
+
+    const taskMod = {
+      title: "Test Aubaaaaa",
+      created_at: "30/01/2022",
+      update_at: "22/01/2023",
+      status: "Done",
+    };
+    const maData = await crud.addTask("http://localhost:3000/taches/", task);
+    const modData = await crud.updateTask(maData.id, taskMod);
+    const reponse = await require.getTaskById("http://localhost:3000/taches", modData.id);
+    const taskGet = await reponse.json();
+    //console.log(modData);
+    console.log(require.verifyTask(taskMod, taskGet));
+    if(require.verifyTask(taskMod, taskGet)) {
+      crud.deleteTask(maData.id);
+    }
+  }
+
+//Test de suppression
+const btn_del = document.getElementById("btn-del");
+btn_del.addEventListener("click", testDel);
+
+async function testDel(){
+  const task = {
+    title: "Tester Ajout Aubaaaaa",
+    created_at: "31/01/2023",
+    update_at: "",
+    status: "pending",
+  };
+  const maData = await crud.addTask("http://localhost:3000/taches/", task);
+  const delData = await crud.deleteTask(maData.id);
+  const reponse = await require.getTaskById("http://localhost:3000/taches", maData.id);
+  if(reponse.ok){
+    console.log(false);
+    //return false;
+  }else{
+   console.log(true);
+   //return true;
+  }
+}
+
+const btn_all = document.getElementById("btn-all");
+btn_all.addEventListener('click', ()=>{
+  testAdd();
+  // testMod();
+})
 
 const title = document.getElementById("input-task");
-
-const btnUpdate = document.querySelector(".btn-update");
-
-const message = document.querySelector("#message");
-
-const btnDelete = document.querySelector(".btn-delete");
-
-const input = document.getElementById("input");
-
 const getAllData = document.getElementById("getAllData");
 
 //Test
-const btn_test = document.getElementById("btn-test");
+// const btn_test = document.getElementById("btn-test");
 
 const form = document.querySelector("form");
 form.addEventListener("submit", (e) => deleteTask(e));
@@ -52,164 +115,70 @@ let dateLocale = date1.toLocaleString("fr-FR", {
   second: "numeric",
 });
 
+// testAdd();
+// console.log("test globale");
+// testMod();
+// console.log("test globale");
+// testDel();
+// console.log("test globale");
+
 const getTask = (element) => {
   title.value = element.title;
   idElemetToUpdate = element.id;
   btn.textContent = "Modifier";
 };
 
-async function updateTask(id, title) {
-  const res = await fetch("http://localhost:3000/taches/" + id, {
-    method: "PATCH",
+btn.addEventListener("click", () => {
+  let date =
+    new Date().getDay() +
+    "/" +
+    new Date().getMonth() +
+    1 +
+    "/" +
+    new Date().getFullYear();
 
-    headers: {
-      "Content-Type": "application/json",
-    },
-
-    body: JSON.stringify({ title }),
-  });
-}
-
-const deleteTask = (taskId) => {
-  if (!taskId) return;
-
-  const options = {
-    method: "DELETE",
-
-    headers: new Headers(),
-  };
-
-  fetch(`http://localhost:3000/taches/${taskId}`, options).catch((err) =>
-    console.error(err)
-  );
-};
-
-function testUpdate(data) {
-  if (
-    data.created_at != null ||
-    data.updated_at != null ||
-    data.id != null ||
-    data.title != null ||
-    data.status != null
-  ) {
-    return 0;
-  } else {
-    return 1;
-  }
-}
-
-function testAdd() {
   tache = {
-    title: "aube mbali",
-    created_at: "01/03/2023",
+    title: title.value,
+
+    created_at: date,
+
+    update_at: "",
+
     status: "pending",
   };
 
-  let retour = addTask(urlHost, tache);
-  retour.then((task) => {
-    if (task.title == tache.title) {
-      let tacheUpdate = {
-        id: task.id,
-        title: "Sah nerisse",
-        created_at: "29/01/2023",
-        update_at: "31/02/2023",
-        status: "fait",
-      };
-
-      if (testUpdate(tacheUpdate) == 0) {
-        updateTask(tacheUpdate.id, tacheUpdate.title);
-        deleteTask(task.id);
-      } else {
-        let p = document.createElement("p");
-        p.innerHTML = `<span class="text-white">Les champs sont obligatoires</span>`;
-        p.className = "bg-danger text-center ";
-        message.append(p);
-      }
-    } else {
-      console.log(1);
+  if (btn.textContent === "Modifier" && idElemetToUpdate != null) {
+    if (testUpdate(tache) == 0) {
+      updateTask(idElemetToUpdate, title.value);
+      idElemetToUpdate = null;
+      console.log("Updated task");
     }
-  });
-}
+  } else {
+    console.log("Created task");
+    crud.addTask(urlHost, tache)
+      .then((data) => {
+        if (data) {
+          let div = document.createElement("div");
 
-// btn.addEventListener("click", () => {
-//   let date =
-//     new Date().getDay() +
-//     "/" +
-//     new Date().getMonth() +
-//     1 +
-//     "/" +
-//     new Date().getFullYear();
+          div.className = "alert alert-success";
 
-//   tache = {
-//     title: title.value,
+          div.role = "alert";
 
-//     created_at: date,
+          let p = document.createElement("p");
 
-//     update_at: "",
+          p.className = "text-black fw-bold";
 
-//     status: "pending",
-//   };
+          div.appendChild(p);
 
-//   if (btn.textContent === "Modifier" && idElemetToUpdate != null) {
-//     if (testUpdate(tache) == 0) {
-//       updateTask(idElemetToUpdate, title.value);
-//       idElemetToUpdate = null;
-//       console.log("Updated task");
-//     }
-//   } else {
-//     console.log("Created task");
-//     addTask(urlHost, tache)
-//       .then((data) => {
-//         if (data) {
-//           let div = document.createElement("div");
+          alertElt.appendChild(div);
+        }
+      })
 
-//           div.className = "alert alert-success";
-
-//           div.role = "alert";
-
-//           let p = document.createElement("p");
-
-//           p.className = "text-black fw-bold";
-
-//           div.appendChild(p);
-
-//           alertElt.appendChild(div);
-//         }
-//       })
-
-//       .catch((err) => {
-//         console.log(err);
-//       });
-//   }
-// });
-
-async function addTask(url = "", data = {}) {
-  // Default options are marked with *
-
-  const response = await fetch(url, {
-    method: "POST", // *GET, POST, PUT, DELETE, etc.
-
-    mode: "cors", // no-cors, *cors, same-origin
-
-    cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
-
-    credentials: "same-origin", // include, *same-origin, omit
-
-    headers: {
-      "Content-Type": "application/json",
-
-      // 'Content-Type': 'application/x-www-form-urlencoded',
-    },
-
-    redirect: "follow", // manual, *follow, error
-
-    referrerPolicy: "no-referrer", // no-referrer, *no-referrer-when-downgrade, origin, origin-when-cross-origin, same-origin, strict-origin, strict-origin-when-cross-origin, unsafe-url
-
-    body: JSON.stringify(data), // body data type must match "Content-Type" header
-  });
-
-  return response.json(); // parses JSON response into native JavaScript objects
-}
+      .catch((err) => {
+        console.log(err);
+      });
+  }
+});
 
 async function getDataOfTask() {
   var myHeaders = new Headers();
@@ -284,7 +253,7 @@ getDataOfTask()
       a5.innerHTML = `<i class="fas  fa-trash me-2 text-danger"></i>`;
       a5.setAttribute("href", "#");
       a5.setAttribute("id", element.id);
-      a5.addEventListener("click", (e) => deleteTask(e.target.id));
+      a5.addEventListener("click", (e) => crud.deleteTask(element.id));
 
       div3.appendChild(p3);
       li3.appendChild(div3);
@@ -299,20 +268,9 @@ getDataOfTask()
       ul.append(li);
       ul.append(li2);
       ul.append(li3);
-      console.log(ul);
+      //console.log(ul);
       getAllData.append(ul);
     });
-
-    //Obtenir la clé et la valeur avec la fonction entries
-    // for (const [key, value] of Object.entries(attributes)) {
-    //   if (value !== null) {
-    //     element.setAttribute(key, value);
-    //   }
-    // }
-
-    // data.forEach((element) => {
-    //   titleTask.innerHTML;
-    // });
   })
   .catch((err) => {
     let div = document.createElement("div");
