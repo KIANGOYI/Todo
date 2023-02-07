@@ -1,0 +1,21 @@
+.w-20{
+    width: 15%;
+}
+
+.rounded{
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 30px 20px -2px;
+}
+
+.alert-box {
+	padding: 15px;
+    margin-bottom: 20px;
+    border: 1px solid transparent;
+    border-radius: 4px;  
+}
+
+.warning {
+    color: #8a6d3b;
+    background-color: #fcf8e3;
+    border-color: #faebcc;
+    display: none;
+}
