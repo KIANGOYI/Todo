@@ -22,7 +22,7 @@ export function verifyTask(objectAdd, objetGet) {
   return false;
 }
 
-export async function testAdd() {
+export async function testAdd(refresh = true) {
     const task = {
         title: "Tester addTask",
         created_at: "31/01/2023",
@@ -36,14 +36,14 @@ export async function testAdd() {
     const taskGet = await reponse.json();
     const end = Date.now()
     const duration = end - start;
-    //console.log(modData);
     console.log(verifyTask(task, taskGet) + " - " + duration);
     if (verifyTask(task, taskGet)) {
-        crud.deleteTask(maData.id);
+        document.getElementById("div.warning").innerHTML = "Test Ajout: confirmer";
+        crud.deleteTask(maData.id, refresh);
     }
 }
 
-export async function testMod() {
+export async function testMod(refresh = true) {
     const task = {
         title: "Tester updateTask",
         created_at: "31/01/2023",
@@ -63,12 +63,12 @@ export async function testMod() {
     const taskGet = await reponse.json();
 
     if (verifyTask(taskGet, taskMod)){
-        console.log("del " + taskGet.title + " : " + taskGet.id);
-        await crud.deleteTask(taskGet.id);
+        document.getElementById("div.warning").innerHTML = "Test Modication: comfirmer";
+        await crud.deleteTask(taskGet.id, refresh);
     }
 }
 
-export async function testDel() {
+export async function testDel(refresh = true) {
     const task = {
         title: "Tester deleteTask",
         created_at: "31/01/2023",
@@ -77,22 +77,39 @@ export async function testDel() {
     };
 
     const maData = await crud.addTask("http://localhost:3000/taches/", task);
-    const delData = await crud.deleteTask(maData.id);
+    const delData = await crud.deleteTask(maData.id, false);
     const reponse = await getTaskById("http://localhost:3000/taches", maData.id);
     if (reponse.ok) {
         console.log(response);
+        document.getElementById("div.warning").innerHTML = "Test Del: erreur";
+        document.getElementById("div.warning").style.display = 'block';
         return false;
     } else {
-        console.log("Suppresion effectué");
+        document.getElementById("div.warning").innerHTML = "Test Del: confirm";
+        document.getElementById("div.warning").style.display = 'block';
+        if(refresh)
+            location.reload();
         return true;
     }
 }
 
 
 export async function testBab() {
-    testMod();
-    testDel();
+    document.getElementById("div.warning").innerHTML = "0 / 2";
+    testMod(false).then((response) => {
+        document.getElementById("div.warning").innerHTML = "1 / 2";
+        testDel(false).then((response) => {
+            document.getElementById("div.warning").innerHTML = "2 / 2 Test Bout à Bout: tout est passé";
 
-document.getElementById("div.warning").innerHTML = "Test Bout à Bout: tout est passé";
-    document.getElementById("div.warning").style.display = 'block';
+            return response;
+        }).catch((error) => {
+            // Your error is here!
+            return error;
+        });
+
+        return response;
+    }).catch((error) => {
+        // Your error is here!
+        return error;
+    });
 }

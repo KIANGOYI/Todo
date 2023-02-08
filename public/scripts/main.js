@@ -7,15 +7,15 @@ const btn = document.getElementById("btn-task");
 
 //Test d'ajout
 const btn_add = document.getElementById("btn-add");
-btn_add.addEventListener("click", require.testAdd);
+btn_add.addEventListener("click", function() { require.testAdd(false) });
 
 //Test de modification
  const btn_mod = document.getElementById("btn-mod");
- btn_mod.addEventListener("click", require.testMod);
+ btn_mod.addEventListener("click", function() { require.testMod(false) });
 
 //Test de suppression
 const btn_del = document.getElementById("btn-del");
-btn_del.addEventListener("click", require.testDel);
+btn_del.addEventListener("click", function() { require.testDel(false) });
 
 //Test bout à bout
 const btn_all = document.getElementById("btn-all");
@@ -159,8 +159,12 @@ getDataOfTask()
       input.className = `form-check-input me-0`;
       input.setAttribute("type", "checkbox");
       input.setAttribute("value", element.id);
+      if (element.status == "done")
+        input.setAttribute("checked", true);
       div.append(input);
       li.append(div);
+
+      input.addEventListener('click', function() { crud.validTask(element.id, element) });
 
       let li2 = document.createElement("li");
       li2.className = `list-group-item px-3 py-1 d-flex align-items-center flex-grow-1 border-0 `;

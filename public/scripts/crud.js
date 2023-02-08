@@ -1,4 +1,23 @@
 
+export async function validTask(id, title) {
+
+    if (title.status == "done")
+      title.status = "pending";
+    else
+      title.status = "done"
+    const res = await fetch("http://localhost:3000/taches/" + id, {
+      method: "PATCH",
+
+      headers: {
+        "Content-Type": "application/json",
+      },
+
+      body: JSON.stringify(title),
+    });
+    return res.json();
+}
+
+
 export async function updateTask(id, title) {
     const res = await fetch("http://localhost:3000/taches/" + id, {
       method: "PATCH",
@@ -13,7 +32,7 @@ export async function updateTask(id, title) {
 }
   
 
-export async function deleteTask(taskId) {
+export async function deleteTask(taskId, refresh = true) {
   
     const options = {
       method: "DELETE",
@@ -28,8 +47,9 @@ export async function deleteTask(taskId) {
       return response;
       }).then((returnedResponse) => {
          // Your response to manipulate
-         location.reload();
-         return response.json();
+        if (refresh)
+          location.reload();
+        return response.json();
       }).catch((error) => {
         // Your error is here!
         return error;
